@@ -1,5 +1,5 @@
 all:
-	g++ src/*.cpp -lglfw3 -lSOIL -lGLU -lGL -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lGLEW -o game
+	g++ src/*.cpp -lglfw -lSOIL -lGLU -lGL -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lGLEW -o game
 	./game
 	rm game
 
