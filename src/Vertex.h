@@ -1,9 +1,11 @@
 //
-// Created by bily101 on 5/31/21.
+// Created by bily101 on 6/21/21.
 //
 
-#pragma once
-#include <iostream>
+#ifndef LOL_VERTEX_H
+#define LOL_VERTEX_H
+
+#include <glm/glm.hpp>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -18,5 +20,13 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Vertex.h"
-#include "Primitives.h"
 
+
+struct Vertex {
+    glm::vec3 position;
+    glm::vec3 color;
+    glm::vec2 texcoord;
+    glm::vec3 normal;
+};
+
+#endif //LOL_VERTEX_H
