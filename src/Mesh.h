@@ -84,10 +84,12 @@ private:
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
         glBufferData(GL_ARRAY_BUFFER, this->nrOfVertices * sizeof(Vertex), vertexArray, GL_STATIC_DRAW);
 
-        glGenBuffers(1, &this->EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
 
+        if(this->nrOfIndices > 0) {
+            glGenBuffers(1, &this->EBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nrOfIndices * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
+        }
         //SET attrib points for the vertex
         //GLuint attribLoc = glGetAttribLocation(core_program, "Vertex_Position");
 
@@ -204,7 +206,11 @@ public:
         this->updateUniforms(shader);
         shader->use();
         glBindVertexArray(this->VAO);
-        glDrawElements(GL_TRIANGLES, this->nrOfIndices, GL_UNSIGNED_INT, 0);
+
+        if(this->nrOfIndices == 0)
+            glDrawArrays(GL_TRIANGLES, 0, this->nrOfVertices);
+        else
+            glDrawElements(GL_TRIANGLES, this->nrOfIndices, GL_UNSIGNED_INT, 0);
 
     }
 };
