@@ -34,6 +34,9 @@ void Game::initOpenGLOptions()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // mouse/input
+    glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Game::initGLFW()
@@ -121,13 +124,25 @@ void Game::updateUniforms()
 {
     this->materials[MAT_1]->sendToShader(*this->shaders[SHADER_CORE_PROGRAM]);
 
-    //glfwGetFramebufferSize(this->window, &this->framebufferWidth, &this->framebufferHeight);
+    //Update view matrix (camera)
 
-    ProjectionMatrix = glm::perspective(
-            glm::radians(fov),
+    this->ViewMatrix = glm::lookAt(
+            this->camPosition,
+            this->camPosition + this->camFront,
+            this->worldUp
+    );
+    this->shaders[SHADER_CORE_PROGRAM]->setMat4fv(ViewMatrix,"ViewMatrix");
+    this->shaders[SHADER_CORE_PROGRAM]->setVec3f(camPosition, "cameraPos");
+
+
+    glfwGetFramebufferSize(this->window, &this->framebufferWidth, &this->framebufferHeight);
+
+
+    this->ProjectionMatrix = glm::perspective(
+            glm::radians(this->fov),
             static_cast<float>(framebufferWidth) / framebufferHeight,
-            nearPlane,
-            farPlane
+            this->nearPlane,
+            this->farPlane
     );
 
     this->shaders[SHADER_CORE_PROGRAM]->setMat4fv(ProjectionMatrix,"ProjectionMatrix");
@@ -135,6 +150,8 @@ void Game::updateUniforms()
 }
 
 //General Functions
+
+
 
 
 void Game::initWindow(const char *title, bool resizable) {
@@ -186,6 +203,18 @@ Game::Game(const char *title,
     this-> nearPlane = 0.1f;
     this-> farPlane = 1000.f;
 
+    this->dt = 0.f;
+    this->curlTime = 0.f;
+    this->lastTime = 0.f;
+
+    this->lastMouseX = 0.0;
+    this->lastMouseY = 0.0;
+    this->mouseX = 0.0;
+    this->mouseY = 0.0;
+    this->mouseOffsetX = 0.0;
+    this->mouseOffsetY = 0.0;
+    this->firstMouse = true;
+
     this->initGLFW();
     this->initWindow(title, resizable);
     this->initGLEW();
@@ -235,12 +264,95 @@ void Game::setWindowShouldClose()
 }
 
 // Functions
+
+void Game::updateKeyboardInput()
+{
+
+    // PROGRAM
+    if(glfwGetKey(this->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        setWindowShouldClose();
+    }
+
+    //CAMERA
+
+    if(glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        this->camPosition.z -= 0.05f;
+    }
+
+    if(glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        this->camPosition.z += 0.05f;
+    }
+    if(glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        this->camPosition.x -= 0.05f;
+    }
+    if(glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        this->camPosition.x += 0.05f;
+    }
+    if(glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        this->camPosition.y += 0.05f;
+    }
+    if(glfwGetKey(this->window, GLFW_KEY_C) == GLFW_PRESS)
+    {
+        this->camPosition.y -= 0.05f;
+      //  this->camPosition.rotate += 0.05f;
+    }
+
+
+    // Y movement
+
+}
+
+void Game::updateMouseInput()
+{
+
+    glfwGetCursorPos(this->window, &this->mouseX, &this->mouseY);
+    if(this->firstMouse)
+    {
+        this->lastMouseX = this->mouseX;
+        this->lastMouseY = this->mouseY;
+        this->firstMouse = false;
+    }
+    this->mouseOffsetX = this->mouseX - this->lastMouseX;
+    this->mouseOffsetY = this->mouseY - this->lastMouseY;
+
+    this->lastMouseX = this->mouseX;
+    this->lastMouseY = this->lastMouseY;
+
+
+}
+
+void Game::updateDt()
+{
+    this->curlTime = static_cast<float >(glfwGetTime());
+    this->dt = this->curlTime - this->lastTime;
+    this->lastTime = this->curlTime;
+
+}
+
+
+void Game::updateInput()
+{
+    glfwPollEvents();
+
+    this->updateKeyboardInput();
+    this->updateMouseInput();
+}
+
 void Game::update()
 {
-    //Update input
-    this->updateInput(this->window, *this->meshes[MESH_QUAD]);
+    this->updateInput();
+    this->updateDt();
 
-    glfwPollEvents();
+//    std::cout << "DT: " << this->dt << "\n";
+//    std::cout << "MouseOffset: " << this->mouseX << "\n";
+
+    //Update input
 }
 
 void Game::render()
@@ -293,7 +405,7 @@ void Game::framebuffer_resize_callback(GLFWwindow *window, int fbW, int fbH) {
 
 
 
-
+/*
 
 void Game::updateInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -340,5 +452,6 @@ void Game::updateInput(GLFWwindow *window, Mesh &mesh) {
     }
 }
 
+*/
 
 
