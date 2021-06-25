@@ -53,6 +53,10 @@ private:
     float nearPlane;
     float farPlane;
 
+
+    //Camera
+
+    Camera camera;
     //Shaders
     std::vector<Shader*> shaders;
 
@@ -62,12 +66,11 @@ private:
     //Materials
     std::vector<Material*> materials;
 
-    //Mesh's
-    std::vector<Mesh*> meshes;
-
     //Lights
 
     std::vector <glm::vec3*> lights;
+    //Models
+    std::vector <Model*> models;
 
 
     //Private Functions
@@ -79,8 +82,10 @@ private:
     void initShaders();
     void initTextures();
     void initMaterials();
+    void initOBJModels();
     void initMeshes();
     void initLights();
+    void initModels();
     void initUniforms();
 
     void updateUniforms();

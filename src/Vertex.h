@@ -1,9 +1,7 @@
 //
 // Created by bily101 on 6/21/21.
 //
-
-#ifndef LOL_VERTEX_H
-#define LOL_VERTEX_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <fstream>
@@ -29,4 +27,3 @@ struct Vertex {
     glm::vec3 normal;
 };
 
-#endif //LOL_VERTEX_H
